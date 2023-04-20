@@ -5,12 +5,11 @@
 #include "colors.h"
 using namespace std;
 
-#define RATIO 4
+#define RATIO 5
 #define SCREEN_WIDTH 1400
 #define SCREEN_HEIGHT 1400
 #define SWS (SCREEN_WIDTH / RATIO)
 #define SHS (SCREEN_HEIGHT / RATIO)
-
 
 random_device rd;
 mt19937 gen(rd());
@@ -19,12 +18,10 @@ uniform_int_distribution<> deez(0, 1);
 
 array<array<int, SWS>, SHS> current;
 array<array<int, SWS>, SHS> nextgen;
+array<array<int, SWS>, SHS> display;
 
 int directions[8][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-
-auto &colors = duskReverse;
-
-
+auto &colors = arcticReverse;
 const int ALIVE = int(sizeof(colors) / sizeof(colors[0]));
 const int BORN = int(4.5/5.0 * ALIVE);
 
@@ -36,6 +33,40 @@ void randomFill()
         {
             current[i][j] = (deez(gen)) == 1 ? 0 : BORN;
             nextgen[i][j] = 0;
+            display[i][j] = 0;
+        }
+    }
+}
+
+void average_map(string type)
+{
+    if (type == "navg") {
+        for (int i = 0; i < SHS; i++)
+        {
+            for (int j = 0; j < SWS; j++)
+            {
+                int average = current[i][j];
+                int neighbors = 1;
+                for (int k = 0; k < 8; k++)
+                {
+                    if (i + directions[k][0] > -1 && i + directions[k][0] < SHS && j + directions[k][1] > -1 && j + directions[k][1] < SWS)
+                    {
+                        average += current[i + directions[k][0]][j + directions[k][1]];
+                        neighbors++;
+                    }
+                }
+                average = (int) average / neighbors;
+                display[i][j] = average;
+            }
+        }
+    } 
+    else if (type == "none") {
+        for (int i = 0; i < SHS; i++)
+        {
+            for (int j = 0; j < SWS; j++)
+            {
+                display[i][j] = current[i][j];
+            }
         }
     }
 }
@@ -113,10 +144,10 @@ int main(int argc, char **argv)
                 }
 
                 Uint32 color =
-                    ((colors[current[i][j]][0] << screen->format->Rshift) & screen->format->Rmask) |
-                    ((colors[current[i][j]][1] << screen->format->Gshift) & screen->format->Gmask) |
-                    ((colors[current[i][j]][2] << screen->format->Bshift) & screen->format->Bmask) |
-                    ((colors[current[i][j]][3] << screen->format->Ashift) & screen->format->Amask);
+                    ((colors[display[i][j]][0] << screen->format->Rshift) & screen->format->Rmask) |
+                    ((colors[display[i][j]][1] << screen->format->Gshift) & screen->format->Gmask) |
+                    ((colors[display[i][j]][2] << screen->format->Bshift) & screen->format->Bmask) |
+                    ((colors[display[i][j]][3] << screen->format->Ashift) & screen->format->Amask);
 
                 
                 for (int y = 0; y < RATIO; ++y)
@@ -130,6 +161,7 @@ int main(int argc, char **argv)
 				}
             }
         }
+        average_map("navg");
         SDL_UnlockSurface(screen);
         SDL_UpdateWindowSurface(window);
         swap(front, back);
