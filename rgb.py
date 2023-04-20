@@ -24,7 +24,7 @@ def generate_color_maps():
 
 
 def decimal_to_255(rgb):
-    return [round(255*rgb[0]), round(255*rgb[1]), round(255*rgb[2])]
+    return rgb
 
 
 if __name__ == "__main__":
