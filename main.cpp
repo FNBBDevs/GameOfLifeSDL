@@ -5,7 +5,7 @@
 #include "colors.h"
 using namespace std;
 
-#define RATIO 1
+#define RATIO 4
 #define SCREEN_WIDTH 1400
 #define SCREEN_HEIGHT 1400
 #define SWS (SCREEN_WIDTH / RATIO)
@@ -22,11 +22,11 @@ array<array<int, SWS>, SHS> nextgen;
 
 int directions[8][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-auto &colors = bubbleGum;
+auto &colors = copper;
 
 
 const int ALIVE = int(sizeof(colors) / sizeof(colors[0]));
-const int BORN = int(3.0/5.0 * ALIVE);
+const int BORN = int(4.5/5.0 * ALIVE);
 
 void randomFill()
 {
