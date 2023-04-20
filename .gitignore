@@ -3,3 +3,4 @@
 *.pyo
 *.o
 *.exe
+__pycache__
