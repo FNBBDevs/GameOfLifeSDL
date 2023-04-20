@@ -21,10 +21,7 @@ array<array<int, SWS>, SHS> nextgen;
 array<array<int, SWS>, SHS> display;
 
 int directions[8][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-
-auto &colors = prideReverse;
-
-
+auto &colors = arcticReverse;
 const int ALIVE = int(sizeof(colors) / sizeof(colors[0]));
 const int BORN = int(4.5/5.0 * ALIVE);
 
@@ -48,8 +45,8 @@ void average_map(string type)
         {
             for (int j = 0; j < SWS; j++)
             {
-                int average = 0;
-                int neighbors = 0;
+                int average = current[i][j];
+                int neighbors = 1;
                 for (int k = 0; k < 8; k++)
                 {
                     if (i + directions[k][0] > -1 && i + directions[k][0] < SHS && j + directions[k][1] > -1 && j + directions[k][1] < SWS)
