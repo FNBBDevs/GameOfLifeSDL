@@ -22,7 +22,7 @@ array<array<int, SWS>, SHS> nextgen;
 
 int directions[8][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-auto &colors = copper;
+auto &colors = duskReverse;
 
 
 const int ALIVE = int(sizeof(colors) / sizeof(colors[0]));
