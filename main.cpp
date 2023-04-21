@@ -6,15 +6,15 @@
 using namespace std;
 
 #define RATIO 1
-#define SCREEN_WIDTH 1500
-#define SCREEN_HEIGHT 800
+#define SCREEN_WIDTH 1000
+#define SCREEN_HEIGHT 1000
 #define SWS (SCREEN_WIDTH / RATIO)
 #define SHS (SCREEN_HEIGHT / RATIO)
 
 random_device rd;
 mt19937 gen(rd());
 
-auto &colors = prideReverse;
+auto &colors = arctic;
 uniform_int_distribution<> distrib(0, prideReverseSize - 1);
 uniform_int_distribution<> deez(0, 1);
 
@@ -40,7 +40,7 @@ void randomFill()
     }
 }
 
-void nearest_neighbor()
+void average_neighgbor()
 {
     for (int i = 0; i < SWS; i++)
     {
@@ -62,9 +62,49 @@ void nearest_neighbor()
     }
 }
 
-void bilinear()
-{
-    return;
+// https://en.wikipedia.org/wiki/Bilinear_interpolation
+void bilinear() {
+    int scale = 1;
+    double xscale = (double)SHS / (SHS-scale);
+    double yscale = (double)SWS / (SWS-scale);
+    for (int i = 0; i < SWS; i++) {
+        int iprime = (int)floor (i / xscale);
+        for (int j = 0; j < SHS; j++) {
+            int jprime = (int)floor (j / yscale);
+            int coord1 = current[iprime][jprime];
+            int coord2 = current[iprime][jprime+1];
+            int coord3 = current[iprime+1][jprime];
+            int coord4 = current[iprime + 1][jprime + 1];
+            double fi = i / xscale - iprime;
+            double fj = j / yscale - jprime;
+            display[i][j] = (1 - fi) * (1 - fj) * coord1 + (1 - fi) * fj * coord2 +
+            fi * (1 - fj) * coord3 + fi * fj * coord4;
+        }
+    }
+}
+
+// https://en.wikipedia.org/wiki/Bicubic_interpolation
+void bicubic(){
+    double xscale = (double)SHS / (SHS - 1);
+    double yscale = (double)SWS / (SWS - 1);  
+    // weighted matrix  
+    auto weighted = [](double x, double y) -> double {
+      return x * x * y * y * (9 - 6 * x - 6 * y + 4 * x * y);
+    };
+    for (int i = 0; i < SWS; i++) { 
+        int iprime = (int) (i / xscale);  
+        for (int j = 0; j < SHS; j++) {   
+            int jprime = (int) (j / yscale);
+            int coord1 = current[iprime][jprime];
+            int coord2 = current[iprime][jprime + 1];
+            int coord3 = current[iprime + 1][jprime];
+            int coord4 = current[iprime + 1][jprime + 1]; 
+            double fi = i / xscale - iprime;
+            double fj = j / yscale - jprime;  
+            display[i][j] = weighted(1 - fi, 1 - fj) * coord1 + weighted(1 - fi, fj) * coord2 +
+                weighted(fi, 1 - fj) * coord3 + weighted(fi, fj) * coord4;
+        }
+    }
 }
 
 void none()
@@ -78,19 +118,17 @@ void none()
     }
 }
 
-void antialias(string type)
+constexpr unsigned int strhash(const char *s, int offset=0){
+    return !s[offset] ? 5381 : (strhash(s, offset+1)*33) ^ s[offset];
+}
+
+void antialias(const char *antialiasType)
 {
-    if (type == "navg")
-    {
-        nearest_neighbor();
-    }
-    else if (type == "bilinear")
-    {
-        bilinear();
-    }
-    else if (type == "none")
-    {
-        none();
+    switch(strhash(antialiasType)){
+        case strhash("navg"): average_neighgbor(); break;
+        case strhash("bilinear"): bilinear(); break;
+        case strhash("bicubic"): bicubic(); break;
+        default: none();
     }
 }
 
@@ -99,7 +137,7 @@ int main(int argc, char **argv)
     SDL_Window *window = nullptr;
     SDL_Surface *screen;
     SDL_Event e;
-    window = SDL_CreateWindow("Game Of life", 20, 20, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Game of Life", 20, 20, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     screen = SDL_GetWindowSurface(window);
     SDL_Init(SDL_INIT_EVERYTHING);
     bool running = true;
@@ -131,8 +169,8 @@ int main(int argc, char **argv)
                     if (current[i][j] == ALIVE)
                     {
                         nextgen[i][j] = BORN - 1;
-                        // for (int k = 0; k < 8; k++)
-                        //         nextgen[i + directions[k][0]][j + directions[k][1]] = BORN;
+                        for (int k = 0; k < 8; k++)
+                                nextgen[i + directions[k][0]][j + directions[k][1]] = BORN;
                     }
                     else
                     {
@@ -181,6 +219,5 @@ int main(int argc, char **argv)
         SDL_UpdateWindowSurface(window);
         swap(front, back);
     }
-
     return 0;
 }
