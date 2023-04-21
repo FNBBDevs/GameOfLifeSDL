@@ -5,31 +5,33 @@
 #include "colors.h"
 using namespace std;
 
-#define RATIO 5
-#define SCREEN_WIDTH 1400
-#define SCREEN_HEIGHT 1400
+#define RATIO 1
+#define SCREEN_WIDTH 1500
+#define SCREEN_HEIGHT 800
 #define SWS (SCREEN_WIDTH / RATIO)
 #define SHS (SCREEN_HEIGHT / RATIO)
 
 random_device rd;
 mt19937 gen(rd());
-uniform_int_distribution<> distrib(0, 255);
+
+auto &colors = prideReverse;
+uniform_int_distribution<> distrib(0, prideReverseSize - 1);
 uniform_int_distribution<> deez(0, 1);
 
-array<array<int, SWS>, SHS> current;
-array<array<int, SWS>, SHS> nextgen;
-array<array<int, SWS>, SHS> display;
+array<array<int, SHS>, SWS> current;
+array<array<int, SHS>, SWS> nextgen;
+array<array<int, SHS>, SWS> display;
 
 int directions[8][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-auto &colors = arcticReverse;
+
 const int ALIVE = int(sizeof(colors) / sizeof(colors[0]));
-const int BORN = int(4.5/5.0 * ALIVE);
+const int BORN = int(4.5 / 5.0 * ALIVE);
 
 void randomFill()
 {
-    for (int i = 0; i < SHS; i++)
+    for (int i = 0; i < SWS; i++)
     {
-        for (int j = 0; j < SWS; j++)
+        for (int j = 0; j < SHS; j++)
         {
             current[i][j] = (deez(gen)) == 1 ? 0 : BORN;
             nextgen[i][j] = 0;
@@ -38,36 +40,57 @@ void randomFill()
     }
 }
 
-void average_map(string type)
+void nearest_neighbor()
 {
-    if (type == "navg") {
-        for (int i = 0; i < SHS; i++)
+    for (int i = 0; i < SWS; i++)
+    {
+        for (int j = 0; j < SHS; j++)
         {
-            for (int j = 0; j < SWS; j++)
+            int average = current[i][j];
+            int neighbors = 1;
+            for (int k = 0; k < 8; k++)
             {
-                int average = current[i][j];
-                int neighbors = 1;
-                for (int k = 0; k < 8; k++)
+                if (i + directions[k][0] >= 0 && i + directions[k][0] < SWS && j + directions[k][1] >= 0 && j + directions[k][1] < SHS)
                 {
-                    if (i + directions[k][0] > -1 && i + directions[k][0] < SHS && j + directions[k][1] > -1 && j + directions[k][1] < SWS)
-                    {
-                        average += current[i + directions[k][0]][j + directions[k][1]];
-                        neighbors++;
-                    }
+                    average += current[i + directions[k][0]][j + directions[k][1]];
+                    neighbors++;
                 }
-                average = (int) average / neighbors;
-                display[i][j] = average;
             }
+            average = (int)average / neighbors;
+            display[i][j] = average;
         }
-    } 
-    else if (type == "none") {
-        for (int i = 0; i < SHS; i++)
+    }
+}
+
+void bilinear()
+{
+    return;
+}
+
+void none()
+{
+    for (int i = 0; i < SWS; i++)
+    {
+        for (int j = 0; j < SHS; j++)
         {
-            for (int j = 0; j < SWS; j++)
-            {
-                display[i][j] = current[i][j];
-            }
+            display[i][j] = current[i][j];
         }
+    }
+}
+
+void antialias(string type)
+{
+    if (type == "navg")
+    {
+        nearest_neighbor();
+    }
+    else if (type == "bilinear")
+    {
+        bilinear();
+    }
+    else if (type == "none")
+    {
+        none();
     }
 }
 
@@ -82,7 +105,7 @@ int main(int argc, char **argv)
     bool running = true;
 
     auto front = &current;
-	auto back = &nextgen;
+    auto back = &nextgen;
 
     randomFill();
 
@@ -94,33 +117,26 @@ int main(int argc, char **argv)
                 running = false;
         }
         auto &current = *front;
-		auto &nextgen = *back;
+        auto &nextgen = *back;
         SDL_LockSurface(screen);
 
-        for (int i = 1; i < SHS-1; i++)
+        for (int i = 1; i < SWS - 1; i++)
         {
-            for (int j = 1; j < SWS-1; j++)
+            for (int j = 1; j < SHS - 1; j++)
             {
-                int neighbors = (current[i + 0][j + 1] >= BORN)
-							  + (current[i + 1][j + 0] >= BORN)
-							  + (current[i - 1][j + 0] >= BORN)
-                              + (current[i + 0][j - 1] >= BORN)
-							  + (current[i + 1][j + 1] >= BORN)
-                              + (current[i + 1][j - 1] >= BORN)
-							  + (current[i - 1][j + 1] >= BORN)
-							  + (current[i - 1][j - 1] >= BORN);
+                int neighbors = (current[i + 0][j + 1] >= BORN) + (current[i + 1][j + 0] >= BORN) + (current[i - 1][j + 0] >= BORN) + (current[i + 0][j - 1] >= BORN) + (current[i + 1][j + 1] >= BORN) + (current[i + 1][j - 1] >= BORN) + (current[i - 1][j + 1] >= BORN) + (current[i - 1][j - 1] >= BORN);
 
                 if (current[i][j] >= BORN)
                 {
                     if (current[i][j] == ALIVE)
                     {
                         nextgen[i][j] = BORN - 1;
-                        //for (int k = 0; k < 8; k++)
-                        //        nextgen[i + directions[k][0]][j + directions[k][1]] = BORN;
+                        // for (int k = 0; k < 8; k++)
+                        //         nextgen[i + directions[k][0]][j + directions[k][1]] = BORN;
                     }
                     else
                     {
-                        //if (neighbors > 1 && neighbors < 4)
+                        // if (neighbors > 1 && neighbors < 4)
                         if (neighbors > 1 and neighbors < 4)
                         {
                             nextgen[i][j] = current[i][j] + 1;
@@ -149,19 +165,18 @@ int main(int argc, char **argv)
                     ((colors[display[i][j]][2] << screen->format->Bshift) & screen->format->Bmask) |
                     ((colors[display[i][j]][3] << screen->format->Ashift) & screen->format->Amask);
 
-                
                 for (int y = 0; y < RATIO; ++y)
-				{
-					for (int x = 0; x < RATIO; ++x)
-					{
-						Uint8 *pixel = (Uint8 *) screen->pixels;
-						pixel += ((RATIO * j + y) * screen->pitch) + ((RATIO * i + x) * sizeof(Uint32));
-						*((Uint32 *) pixel) = color;
-					}
-				}
+                {
+                    for (int x = 0; x < RATIO; ++x)
+                    {
+                        Uint8 *pixel = (Uint8 *)screen->pixels;
+                        pixel += ((RATIO * j + y) * screen->pitch) + ((RATIO * i + x) * sizeof(Uint32));
+                        *((Uint32 *)pixel) = color;
+                    }
+                }
             }
         }
-        average_map("navg");
+        antialias("none");
         SDL_UnlockSurface(screen);
         SDL_UpdateWindowSurface(window);
         swap(front, back);
