@@ -5,7 +5,7 @@
 #include "colors.h"
 using namespace std;
 
-#define RATIO 1
+#define RATIO 2
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 1000
 #define SWS (SCREEN_WIDTH / RATIO)
@@ -14,8 +14,8 @@ using namespace std;
 random_device rd;
 mt19937 gen(rd());
 
-auto &colors = arctic;
-uniform_int_distribution<> distrib(0, prideReverseSize - 1);
+auto &colors = flamingo;
+uniform_int_distribution<> distrib(0, flamingoSize - 1);
 uniform_int_distribution<> deez(0, 1);
 
 array<array<int, SHS>, SWS> current;
@@ -26,6 +26,7 @@ int directions[8][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 
 
 const int ALIVE = int(sizeof(colors) / sizeof(colors[0]));
 const int BORN = int(4.5 / 5.0 * ALIVE);
+const bool EXPLOSION = false;
 
 void randomFill()
 {
@@ -118,6 +119,18 @@ void none()
     }
 }
 
+void nulzo(){
+
+    for (int i=0; i<SHS-1; i++){
+        for (int j=0; j<SWS-1; j++){
+            if(current[i][j] > current[i+1][j+1]) display[i+1][j+1] = (int)((current[i][j] + 1 / (current[i+1][j+1]) + 1) * 2);
+            if(current[i][j] > current[i-1][j-1]) display[i-1][j-1] = (int)((current[i][j] + 1 / (current[i-1][j-1]) + 1) * 2);
+            else display[i][j] = current[i][j];
+        }
+    }
+
+}
+
 constexpr unsigned int strhash(const char *s, int offset=0){
     return !s[offset] ? 5381 : (strhash(s, offset+1)*33) ^ s[offset];
 }
@@ -128,6 +141,7 @@ void antialias(const char *antialiasType)
         case strhash("navg"): average_neighgbor(); break;
         case strhash("bilinear"): bilinear(); break;
         case strhash("bicubic"): bicubic(); break;
+        case strhash("nulzo"): nulzo(); break;
         default: none();
     }
 }
@@ -169,8 +183,10 @@ int main(int argc, char **argv)
                     if (current[i][j] == ALIVE)
                     {
                         nextgen[i][j] = BORN - 1;
+                        if(EXPLOSION) {
                         for (int k = 0; k < 8; k++)
                                 nextgen[i + directions[k][0]][j + directions[k][1]] = BORN;
+                        }
                     }
                     else
                     {
@@ -214,7 +230,7 @@ int main(int argc, char **argv)
                 }
             }
         }
-        antialias("none");
+        antialias("nulzo");
         SDL_UnlockSurface(screen);
         SDL_UpdateWindowSurface(window);
         swap(front, back);
