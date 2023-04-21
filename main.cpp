@@ -14,8 +14,9 @@ using namespace std;
 random_device rd;
 mt19937 gen(rd());
 
-auto &colors = prideReverse;
-uniform_int_distribution<> distrib(0, prideReverseSize - 1);
+auto &colors = amethystReverse;
+
+uniform_int_distribution<> distrib(0, amethystSize - 1);
 uniform_int_distribution<> deez(0, 1);
 
 array<array<int, SHS>, SWS> current;
@@ -80,7 +81,7 @@ void none()
 
 void antialias(string type)
 {
-    if (type == "navg")
+    if (type == "nearest")
     {
         nearest_neighbor();
     }
@@ -88,8 +89,7 @@ void antialias(string type)
     {
         bilinear();
     }
-    else if (type == "none")
-    {
+    else {
         none();
     }
 }
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
                 }
             }
         }
-        antialias("none");
+        antialias("");
         SDL_UnlockSurface(screen);
         SDL_UpdateWindowSurface(window);
         swap(front, back);
