@@ -190,7 +190,6 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                        // if (neighbors > 1 && neighbors < 4)
                         if (neighbors > 1 and neighbors < 4)
                         {
                             nextgen[i][j] = current[i][j] + 1;
