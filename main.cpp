@@ -120,7 +120,7 @@ void none()
 }
 
 void nulzo(){
-
+	
     for (int i=0; i<SHS-1; i++){
         for (int j=0; j<SWS-1; j++){
             if(current[i][j] > current[i+1][j+1]) display[i+1][j+1] = (int)((current[i][j] + 1 / (current[i+1][j+1]) + 1) * 2);
@@ -229,7 +229,7 @@ int main(int argc, char **argv)
                 }
             }
         }
-        antialias("nulzo");
+        antialias("none");
         SDL_UnlockSurface(screen);
         SDL_UpdateWindowSurface(window);
         swap(front, back);
