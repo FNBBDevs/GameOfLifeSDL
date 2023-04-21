@@ -4,11 +4,11 @@
 #- Nolan
 
 CC = g++
-FLAG = -std=c++17 -lSDL2 -O3
+FILENAME = main
+
 ifeq ($(OS),Windows_NT)
-    FLAG += -D WIN32
-	RM = del /Q
-	PATH = $(subst /,\,$1)
+    FLAG = -Isrc/Include -Lsrc/lib -D WIN32 -lmingw32 -lSDL2main -lSDL2 -O3
+	RM = del $(FILENAME).exe
     ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
         FLAG += -D AMD64
     else
@@ -20,8 +20,9 @@ ifeq ($(OS),Windows_NT)
         endif
     endif
 else
-	RM = rm -f
-	PATH = $1
+	RM = rm -f $(FILENAME)
+	PATH = $1 
+    FLAG = -std=c++17 -lSDL2 -O3
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
         FLAG += -D LINUX
@@ -42,8 +43,8 @@ else
 endif
 
 make:
-	$(CC) $(FLAG) -o main main.cpp
+	$(CC) -o main main.cpp $(FLAG)
 	./main
 
 clean:
-	$(RM) main
+	$(RM)
