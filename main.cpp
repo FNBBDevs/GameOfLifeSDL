@@ -6,7 +6,7 @@
 #include "interpolations.h"
 using namespace std;
 
-auto INTERPOLATION = average_neighbor; 
+auto INTERPOLATION = nulzo; 
 random_device rd;
 mt19937 gen(rd());
 uniform_int_distribution<> distrib(0, arcticSize - 1);
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
                     {
                         Uint8 *pixel = (Uint8 *)screen->pixels;
                         pixel += ((RATIO * j + y) * screen->pitch) + ((RATIO * i + x) * sizeof(Uint32));
-                        *((Uint32 *)pixel) = colors[current[i][j]];
+                        *((Uint32 *)pixel) = colors[display[i][j]];
                     }
                 }
             }
