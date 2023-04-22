@@ -1,7 +1,7 @@
 #include <array>
 #include "config.h"
 
-void average_neighbor(std::array<std::array<int, SHS>, SWS>& current, std::array<std::array<int, SHS>, SWS>& display)
+void average_neighbor(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
     for (int i = 0; i < SWS; i++)
     {
@@ -24,7 +24,7 @@ void average_neighbor(std::array<std::array<int, SHS>, SWS>& current, std::array
 }
 
 // https://en.wikipedia.org/wiki/Bilinear_interpolation
-void bilinear(std::array<std::array<int, SHS>, SWS>& current, std::array<std::array<int, SHS>, SWS>& display)
+void bilinear(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
     int scale = 1;
     double xscale = (double)SHS / (SHS - scale);
@@ -48,7 +48,7 @@ void bilinear(std::array<std::array<int, SHS>, SWS>& current, std::array<std::ar
 }
 
 // https://en.wikipedia.org/wiki/Bicubic_interpolation
-void bicubic(std::array<std::array<int, SHS>, SWS>& current, std::array<std::array<int, SHS>, SWS>& display)
+void bicubic(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
     double xscale = (double)SHS / (SHS - 1);
     double yscale = (double)SWS / (SWS - 1);
@@ -75,7 +75,7 @@ void bicubic(std::array<std::array<int, SHS>, SWS>& current, std::array<std::arr
     }
 }
 
-void none(std::array<std::array<int, SHS>, SWS>& current, std::array<std::array<int, SHS>, SWS>& display)
+void none(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
     for (int i = 0; i < SWS; i++)
     {
@@ -86,7 +86,7 @@ void none(std::array<std::array<int, SHS>, SWS>& current, std::array<std::array<
     }
 }
 
-void nulzo(std::array<std::array<int, SHS>, SWS>& current, std::array<std::array<int, SHS>, SWS>& display)
+void nulzo(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
     for (int i = 1; i < SWS - 1; i++)
     {
@@ -96,6 +96,35 @@ void nulzo(std::array<std::array<int, SHS>, SWS>& current, std::array<std::array
                 display[i][j] = (int)((current[i][j] + 1 / (current[i][j]) + 1) * 2);
             else
                 display[i][j] = current[i][j];
+        }
+    }
+}
+
+
+void erm(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
+{
+    for (int i = 1; i < SWS - 1; i++)
+    {
+        for (int j = 1; j < SHS - 1; j++)
+        {
+            if (j > 0 && j < SWS - 1)
+            {
+                int maxN = 0;
+                for (int k = 0; k < 8; k++) {
+                    if (current[i+DIRECTIONS[k][0]][j+DIRECTIONS[k][1]] > maxN)
+                    {
+                        maxN = current[i+DIRECTIONS[k][0]][j+DIRECTIONS[k][1]];
+                    }
+                }
+                if (maxN > 0)
+                {
+                    display[i][j] = maxN / 2;
+                }
+                else
+                {
+                    display[i][j] = current[i][j];
+                }
+            }
         }
     }
 }

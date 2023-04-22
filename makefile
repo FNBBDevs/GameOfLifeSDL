@@ -7,7 +7,7 @@ CC = g++
 FILENAME = main
 
 ifeq ($(OS),Windows_NT)
-    FLAG = -Isrc/Include -Lsrc/lib -D WIN32 -lmingw32 -lSDL2main -lSDL2 -O3
+    FLAG = -Isrc/Include -Lsrc/lib -D WIN32 -lmingw32 -lSDL2main -lSDL2 -O2
 	RM = del $(FILENAME).exe
     ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
         FLAG += -D AMD64

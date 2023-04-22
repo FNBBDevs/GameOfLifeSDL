@@ -7,5 +7,5 @@
 *.out
 *.exe
 __pycache__
-*/src
-SDL2.dll
+src/
+*.dll
