@@ -16,7 +16,7 @@ def generate_color_maps():
         download = requests.get(f'https://raw.githubusercontent.com/1313e/CMasher/master/cmasher/colormaps/{name}/{name}_8bit.txt')
         print(download.status_code)
         if download.status_code != 404:
-            data = [[int(val) for val in line.strip().split(' ')] for line in io.StringIO(download.content.decode('utf-8')).readlines()]
+            data = [[getIfromRGB(line)] for line in io.StringIO(download.content.decode('utf-8')).readlines()]
         color_maps[name] = data
         color_maps[f'{name}Reverse'] = data[::-1]
     
@@ -27,14 +27,22 @@ def decimal_to_255(rgb):
     return rgb
 
 
+def getIfromRGB(rgb):
+    rgb = [int(val) for val in rgb.strip().split(' ')]
+    red = rgb[0]
+    green = rgb[1]
+    blue = rgb[2]
+    RGBint = (red<<16) + (green<<8) + blue
+    return RGBint
+
 if __name__ == "__main__":
     color_maps = generate_color_maps()
     with open('colors.h', 'w') as f:
         for i, color_map in enumerate(color_maps):
             f.write(f"#define {color_map}Size {len(color_maps[color_map])}\n")
-            f.write(f'int {color_map}[{len(color_maps[color_map])}][4] = ' + '{\n')
+            f.write(f'int {color_map}[{len(color_maps[color_map])}] = ' + '{\n')
             for j in range(len(color_maps[color_map])):
                 if j == len(color_maps[color_map])-1:break
-                f.write("\t{" + f"{str(decimal_to_255(color_maps[color_map][j]))[1:-1]}" + "},\n")
-            f.write("\t{" + f"{str(decimal_to_255(color_maps[color_map][len(color_maps[color_map])-1]))[1:-1]}" + "}\n")
+                f.write("\t" + f"{str(decimal_to_255(color_maps[color_map][j]))[1:-1]}" + ",\n")
+            f.write("\t" + f"{str(decimal_to_255(color_maps[color_map][len(color_maps[color_map])-1]))[1:-1]}" + "\n")
             f.write("};\n\n")
