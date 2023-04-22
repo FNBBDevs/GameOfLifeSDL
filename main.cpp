@@ -5,9 +5,9 @@
 #include "colors.h"
 using namespace std;
 
-#define RATIO 2
-#define SCREEN_WIDTH 1000
-#define SCREEN_HEIGHT 1000
+#define RATIO 1
+#define SCREEN_WIDTH 2560
+#define SCREEN_HEIGHT 1440
 #define SWS (SCREEN_WIDTH / RATIO)
 #define SHS (SCREEN_HEIGHT / RATIO)
 
@@ -27,6 +27,7 @@ int directions[8][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {1, -1}, {-1, 
 const int ALIVE = int(sizeof(colors) / sizeof(colors[0]));
 const int BORN = int(4.5 / 5.0 * ALIVE);
 const bool EXPLOSION = false;
+const char * ANTIALIASE = "none";
 
 void randomFill()
 {
@@ -120,7 +121,7 @@ void none()
 }
 
 void nulzo(){
-	
+
     for (int i=0; i<SHS-1; i++){
         for (int j=0; j<SWS-1; j++){
             if(current[i][j] > current[i+1][j+1]) display[i+1][j+1] = (int)((current[i][j] + 1 / (current[i+1][j+1]) + 1) * 2);
@@ -229,7 +230,7 @@ int main(int argc, char **argv)
                 }
             }
         }
-        antialias("none");
+        antialias(ANTIALIASE);
         SDL_UnlockSurface(screen);
         SDL_UpdateWindowSurface(window);
         swap(front, back);
