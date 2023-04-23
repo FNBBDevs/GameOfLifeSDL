@@ -22,7 +22,7 @@ void randomFill()
     {
         for (int j = 0; j < SHS; j++)
         {
-            current[i][j] = (deez(gen)) == 1 ? 0 : BORN;
+            current[i][j] = (deez(gen)) == 1 ? 0 : ALIVE;
             nextgen[i][j] = 0;
             display[i][j] = 0;
             tmp[i][j] = 0;
