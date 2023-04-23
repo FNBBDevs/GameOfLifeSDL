@@ -10,6 +10,7 @@ random_device rd;
 mt19937 gen(rd());
 uniform_int_distribution<> distrib(0, COLOR_SIZE - 1);
 uniform_int_distribution<> deez(0, 1);
+uniform_int_distribution<> spant(0, 1000000);
 array<array<int, SHS>, SWS> current;
 array<array<int, SHS>, SWS> nextgen;
 array<array<int, SHS>, SWS> display;
@@ -92,7 +93,14 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                        nextgen[i][j] = (current[i][j] <= 0) ? 0 : current[i][j] - 1;
+                        if (SPANT && spant(gen) == 4200)
+                        {
+                            nextgen[i][j] = BORN;
+                        }
+                        else
+                        {
+                            nextgen[i][j] = (current[i][j] <= 0) ? 0 : current[i][j] - 1;
+                        }
                     }
                 }
 
