@@ -1,5 +1,8 @@
 #include <array>
 #include "config.h"
+#include <iostream>
+
+std::array<std::array<int, SHS>, SWS> tp;
 
 void average_neighbor(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
@@ -100,6 +103,91 @@ void nulzo(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array
     }
 }
 
+void meteor(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
+{
+    tp = current;
+    for (int i = 1; i < SWS - 1; i++)
+    {
+        for (int j = 1; j < SHS - 1; j++)
+        {
+            display[i][j] = current[i][j];
+            int avg = 0;
+            int avgCount = 0;
+            for (int k = 0; k < 8; k++)
+            {
+                avg += display[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]];
+                if (display[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]] != 0)
+                {
+                    avgCount++;
+                }
+            }
+            tp[i][j] = (avgCount > 0) ? ((avg / avgCount) + current[i][j]) % COLOR_SIZE : display[i][j];
+        }
+    }
+    for (int i = 1; i < SWS - 1; i++)
+    {
+        for (int j = 1; j < SHS - 1; j++)
+        {
+            int avg = 0;
+            int avgCount = 0;
+            for (int k = 0; k < 8; k++)
+            {
+                avg += tp[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]];
+            }
+            display[i][j] = (avgCount > 0) ? (tp[i][j] + (avg / avgCount)) % COLOR_SIZE : tp[i][j];
+        }
+    }
+}
+
+void cosmicDust(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
+{
+    std::array<std::array<int, SHS>, SWS> tmp = current;
+    for (int i = 1; i < SWS - 1; i++)
+    {
+        for (int j = 1; j < SHS - 1; j++)
+        {
+            display[i][j] = current[i][j];
+            int avg = 0;
+            int avgCount = 0;
+            for (int k = 0; k < 8; k++)
+            {
+                avg += display[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]];
+                if (display[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]] != 0)
+                {
+                    avgCount++;
+                }
+            }
+            display[i][j] = (avgCount > 0) ? ((avg / avgCount) + current[i][j]) % COLOR_SIZE : display[i][j];
+        }
+    }
+}
+
+void solarized(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
+{
+    std::array<std::array<int, SHS>, SWS> tmp = current;
+    for (int i = 1; i < SWS - 1; i++)
+    {
+        for (int j = 1; j < SHS - 1; j++)
+        {
+            display[i][j] = current[i][j];
+            int avg = 0;
+            int avgCount = 0;
+            for (int k = 0; k < 8; k++)
+            {
+                avg += display[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]];
+                if (display[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]] != 0)
+                {
+                    avgCount++;
+                }
+            }
+            for (int k = 0; k < 8; k++)
+            {
+                display[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]] = (avgCount > 0) ? avg / avgCount : BORN;
+            }
+            display[i][j] = (avgCount > 0) ? ((avg / avgCount) + current[i][j]) % COLOR_SIZE : display[i][j];
+        }
+    }
+}
 
 void erm(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
@@ -107,23 +195,18 @@ void erm(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<i
     {
         for (int j = 1; j < SHS - 1; j++)
         {
-            if (j > 0 && j < SWS - 1)
+            if (current[i][j] > BORN)
             {
-                int maxN = 0;
-                for (int k = 0; k < 8; k++) {
-                    if (current[i+DIRECTIONS[k][0]][j+DIRECTIONS[k][1]] > maxN)
-                    {
-                        maxN = current[i+DIRECTIONS[k][0]][j+DIRECTIONS[k][1]];
-                    }
-                }
-                if (maxN > 0)
+                int avg = 0;
+                for(int k = 0; k < 8; k++)
                 {
-                    display[i][j] = maxN / 2;
+                    avg += current[i+DIRECTIONS[k][0]][j+DIRECTIONS[k][1]];
                 }
-                else
-                {
-                    display[i][j] = current[i][j];
-                }
+                display[i][j] = (avg / 8 + current[i][j]) % COLOR_SIZE;
+            }
+            else
+            {
+                display[i][j] = COLOR_SIZE - current[i][j];
             }
         }
     }
