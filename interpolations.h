@@ -26,7 +26,6 @@ void average_neighbor(std::array<std::array<int, SHS>, SWS> &current, std::array
     }
 }
 
-// https://en.wikipedia.org/wiki/Bilinear_interpolation
 void bilinear(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
     int scale = 1;
@@ -50,7 +49,6 @@ void bilinear(std::array<std::array<int, SHS>, SWS> &current, std::array<std::ar
     }
 }
 
-// https://en.wikipedia.org/wiki/Bicubic_interpolation
 void bicubic(std::array<std::array<int, SHS>, SWS> &current, std::array<std::array<int, SHS>, SWS> &display)
 {
     double xscale = (double)SHS / (SHS - 1);
