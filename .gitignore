@@ -1,11 +1,28 @@
+#IDE settings
 .vscode
-*.pyc
+__pycache__
+*.DS_score
+
+#Compiled directory
+bin/
+
+#Object files
 *.pyo
 *.o
-*.exe
-*.DS_score
-*.out
-*.exe
-__pycache__
-src/
+*.obj
+
+#Compiled files
 *.dll
+*.pyc
+
+#Compiled libraries
+.la
+.a
+.lib
+
+#Executables
+*.exe
+*.out
+
+#Misc
+main
