@@ -2,6 +2,7 @@
 #include <array>
 #include "config.h"
 #include "kernels.h"
+#include <algorithm>
 #include <iostream>
 
 std::array<std::array<int, SHS>, SWS> tp;

@@ -3,8 +3,8 @@
 #include <random>
 #include <array>
 #include <functional>
-#include "../include/config.h"
-#include "../include/interpolations.h"
+#include "..\include\config.h"
+#include "..\include\interpolations.h"
 using namespace std;
 
 random_device rd;
