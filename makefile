@@ -44,11 +44,8 @@ ifeq ($(OS),Windows_NT)
     endif
 else
     PATHTOMAIN = src/
-
 	PATHTOBIN = bin/
-
 	RM = rm -f $(PATHTOBIN)$(FILENAME)
-
 	PATH = $1 
     FLAG = -std=c++17 -lSDL2 -O3
     UNAME_S := $(shell uname -s)
