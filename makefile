@@ -71,7 +71,7 @@ else
 endif
 
 make:
-	@echo $(SDLFLAG)
+	@echo
 	@echo '>> Building . . .'
 	@echo
 	@$(CC) $(FLAGS) -o $(PATHTOBIN)$(FILENAME) $(PATHTOMAIN)$(FILENAME).cpp $(FLAG) $(SDLFLAG)
