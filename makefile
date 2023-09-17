@@ -68,22 +68,15 @@ else
 endif
 
 make:
-	@echo
-	@echo '>> Building . . .'
-	@echo
+	@echo Building . . .
 	@$(CC) $(FLAGS) -o $(PATHTOBIN)$(FILENAME) $(PATHTOMAIN)$(FILENAME).cpp $(FLAG) $(SDLFLAG)
-	@echo
-	@echo '>> Successfully built: $(FILENAME)'
-	@echo
+	@echo Successfully built: $(FILENAME)
 	@$(PATHTOBIN)./$(FILENAME)
-	@echo
-	@echo ">> Terminating . . ."
-	@echo
-
+	@echo Terminating . . .
 clean:
 	@echo
-	@echo '>> Deleting . . .'
+	@echo Deleting . . .
 	@echo
 	@$(RM)
-	@echo '>> Successfully deleted: $(FILENAME)'
+	@echo Successfully deleted: $(FILENAME)
 	@echo
