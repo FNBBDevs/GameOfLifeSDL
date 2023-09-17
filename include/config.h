@@ -2,9 +2,9 @@
 #include "colors.h"
 #include <string>
 
-constexpr auto &colors = flamingo;
+constexpr auto &colors = ocean;
 constexpr int COLOR_SIZE = (int) (sizeof(colors) / sizeof(colors[0]));
-constexpr int RATIO = 2;
+constexpr int RATIO = 1;
 constexpr int SCREEN_WIDTH = 1000;
 constexpr int SCREEN_HEIGHT = 1000;
 constexpr int SWS = SCREEN_WIDTH / RATIO;
@@ -19,4 +19,4 @@ constexpr bool EXPLOSION = false;
 constexpr bool SPANT = false;
 
 #include "interpolations.h"
-constexpr auto INTERPOLATION = lensFlare;
+constexpr auto INTERPOLATION = none;
