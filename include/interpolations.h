@@ -125,7 +125,7 @@ void laplacianEdges(std::array<std::array<int, SHS>, SWS> &current, std::array<s
                 }
             }
             sum = std::max(sum, 0);
-            if( i > 1 and i < SHS / 2)
+            if( i > 1 && i < SHS / 2)
             display[i][j] = sum > COLOR_SIZE ? COLOR_SIZE : sum;
             else display[i][j] = current[i][j];
         }
@@ -154,7 +154,7 @@ void sobelEdges(std::array<std::array<int, SHS>, SWS> &current, std::array<std::
             }
             int sum = vMaskSum + hMaskSum;
             sum = std::max(sum, 0);
-            if( i > 1 and i < SHS / 2)
+            if( i > 1 && i < SHS / 2)
             display[i][j] = sum > COLOR_SIZE ? COLOR_SIZE : sum;
             else display[i][j] = current[i][j];
         }
