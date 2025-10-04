@@ -57,65 +57,111 @@ int main(int argc, char **argv)
         auto &nextgen = *back;
         SDL_LockSurface(screen);
 
-        for (int i = 1; i < SWS - 1; i++)
+        if (DECAY)
         {
-            for (int j = 1; j < SHS - 1; j++)
+            for (int i = 1; i < SWS - 1; i++)
             {
-                int neighbors = (current[i + 0][j + 1] >= BORN) + (current[i + 1][j + 0] >= BORN) + (current[i - 1][j + 0] >= BORN) + (current[i + 0][j - 1] >= BORN) + (current[i + 1][j + 1] >= BORN) + (current[i + 1][j - 1] >= BORN) + (current[i - 1][j + 1] >= BORN) + (current[i - 1][j - 1] >= BORN);
-
-                if (current[i][j] >= BORN)
+                for (int j = 1; j < SHS - 1; j++)
                 {
-                    if (current[i][j] == ALIVE)
+                    int neighbors = (current[i + 0][j + 1] >= BORN) + (current[i + 1][j + 0] >= BORN) + (current[i - 1][j + 0] >= BORN) + (current[i + 0][j - 1] >= BORN) + (current[i + 1][j + 1] >= BORN) + (current[i + 1][j - 1] >= BORN) + (current[i - 1][j + 1] >= BORN) + (current[i - 1][j - 1] >= BORN);
+
+                    if (current[i][j] >= BORN)
                     {
-                        nextgen[i][j] = BORN - 1;
-                        if (EXPLOSION)
+                        if (current[i][j] == ALIVE)
                         {
-                            for (int k = 0; k < 8; k++)
-                                nextgen[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]] = BORN;
-                        }
-                    }
-                    else
-                    {
-                        if (neighbors > 1 && neighbors < 4)
-                        {
-                            nextgen[i][j] = current[i][j] + 1;
+                            nextgen[i][j] = BORN - 1;
+                            if (EXPLOSION)
+                            {
+                                for (int k = 0; k < 8; k++)
+                                    nextgen[i + DIRECTIONS[k][0]][j + DIRECTIONS[k][1]] = BORN;
+                            }
                         }
                         else
                         {
-                            nextgen[i][j] = BORN - 1;
+                            if (neighbors > 1 && neighbors < 4)
+                            {
+                                nextgen[i][j] = current[i][j] + 1;
+                            }
+                            else
+                            {
+                                nextgen[i][j] = BORN - 1;
+                            }
                         }
-                    }
-                }
-                else
-                {
-                    if (neighbors == 3)
-                    {
-                        nextgen[i][j] = BORN;
                     }
                     else
                     {
-                        if (SPANT && spant(gen) == 4200)
+                        if (neighbors == 3)
                         {
                             nextgen[i][j] = BORN;
                         }
                         else
                         {
-                            nextgen[i][j] = (current[i][j] <= 0) ? 0 : current[i][j] - 1;
+                            if (SPANT && spant(gen) == 4200)
+                            {
+                                nextgen[i][j] = BORN;
+                            }
+                            else
+                            {
+                                nextgen[i][j] = (current[i][j] <= 0) ? 0 : current[i][j] - 1;
+                            }
                         }
                     }
-                }
 
-                for (int y = 0; y < RATIO; ++y)
-                {
-                    for (int x = 0; x < RATIO; ++x)
+                    for (int y = 0; y < RATIO; ++y)
                     {
-                        Uint8 *pixel = (Uint8 *)screen->pixels;
-                        pixel += ((RATIO * j + y) * screen->pitch) + ((RATIO * i + x) * sizeof(Uint32));
-                        *((Uint32 *)pixel) = colors[display[i][j]];
+                        for (int x = 0; x < RATIO; ++x)
+                        {
+                            Uint8 *pixel = (Uint8 *)screen->pixels;
+                            pixel += ((RATIO * j + y) * screen->pitch) + ((RATIO * i + x) * sizeof(Uint32));
+                            *((Uint32 *)pixel) = colors[display[i][j]];
+                        }
                     }
                 }
             }
         }
+        else
+        {
+            for (int i = 1; i < SWS - 1; i++)
+            {
+                for (int j = 1; j < SHS - 1; j++)
+                {
+                    int neighbors = (current[i + 0][j + 1] > 0) + (current[i + 1][j + 0] > 0) + (current[i - 1][j + 0] > 0) + (current[i + 0][j - 1] > 0) + (current[i + 1][j + 1] > 0) + (current[i + 1][j - 1] > 0) + (current[i - 1][j + 1] > 0) + (current[i - 1][j - 1] > 0); 
+                    if (current[i][j] > 0) // ALIVE
+                    {
+                        if (neighbors > 1 && neighbors < 4)
+                        {
+                            nextgen[i][j] = COLOR_SIZE-1;
+                        }
+                        else
+                        {
+                            nextgen[i][j] = 0;
+                        }
+                    }
+                    else
+                    {
+                        if (neighbors == 3)
+                        {
+                            nextgen[i][j] = COLOR_SIZE - 1;
+                        }
+                        else
+                        {
+                            nextgen[i][j] = 0;
+                        }
+                    }
+
+                    for (int y = 0; y < RATIO; ++y)
+                    {
+                        for (int x = 0; x < RATIO; ++x)
+                        {
+                            Uint8 *pixel = (Uint8 *)screen->pixels;
+                            pixel += ((RATIO * j + y) * screen->pitch) + ((RATIO * i + x) * sizeof(Uint32));
+                            *((Uint32 *)pixel) = colors[display[i][j]];
+                        }
+                    }
+                }
+            }
+        }
+
         INTERPOLATION(current, display);
         SDL_UnlockSurface(screen);
         SDL_UpdateWindowSurface(window);
